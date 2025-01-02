@@ -1,0 +1,3 @@
+[submodule "Event-Sourcing-MS/02-classic-orchestrator"]
+	path = Event-Sourcing-MS/02-classic-orchestrator
+	url = https://github.com/kanghyungmin/Studying.git
