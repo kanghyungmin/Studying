@@ -10,11 +10,13 @@ export class TransferController {
 
   @Post()
   async transfer(@Body() command: TransferMoney): Promise<string> {
-    return this.transferService.transfer(command);
+    console.log("0")
+    return await this.transferService.transfer(command);
   }
 
   @Get(':transferId')
   async queryTransfer(@Param('transferId') transferId: string): Promise<Transfer> {
+    
     const query = new QueryTransfer(transferId);
     return this.transferService.query(query);
   }

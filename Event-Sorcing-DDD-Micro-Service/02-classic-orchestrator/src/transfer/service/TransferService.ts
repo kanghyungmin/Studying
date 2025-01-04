@@ -34,7 +34,9 @@ export class TransferService {
       command.toAccount,
       command.amount,
     );
-    await this.gateway.publishEvent(event);
+    console.log("1")
+    this.gateway.publishEvnetOnlocal(event);
+    console.log("2")
 
     return newId;
   }
@@ -69,6 +71,6 @@ export class TransferService {
       transfer.toAccount,
       transfer.amount,
     );
-    await this.gateway.publishEvent(event);
+    await this.gateway.publishEvnetOnlocal(event);
   }
 }

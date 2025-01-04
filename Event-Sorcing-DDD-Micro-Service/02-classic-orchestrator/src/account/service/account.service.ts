@@ -54,10 +54,10 @@ export class AccountService {
       await this.accountStore.update(account);
 
       if (command.getTransferId()) {
-        this.gateway.publishEvent(new Withdrawed(command.getNo(), command.getAmount(), command.getTransferId()));
+        this.gateway.publishEvnetOnlocal(new Withdrawed(command.getNo(), command.getAmount(), command.getTransferId()));
       }
     } catch (e) {
-        this.gateway.publishEvent(new WithdrawFailed(command.getTransferId()));
+        this.gateway.publishEvnetOnlocal(new WithdrawFailed(command.getTransferId()));
         throw e;
     }
   }
