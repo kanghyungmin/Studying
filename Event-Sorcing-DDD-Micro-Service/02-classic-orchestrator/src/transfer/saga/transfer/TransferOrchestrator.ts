@@ -1,3 +1,22 @@
+// listeners/user-created.listener.ts
+import { Injectable } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
+import { Deposited } from 'src/account/event/Deposited';
+
+
+
+@Injectable()
+export class TransferOrchestrator {
+
+
+  @OnEvent(Deposited.name)
+  async handleDeposited(event: Deposited) {
+  await new Promise(resolve => setTimeout(resolve, 2000)); //비동기 테스트
+    console.log('User created', event);
+  }
+}
+
+
 // import { Injectable } from '@nestjs/common';
 
 

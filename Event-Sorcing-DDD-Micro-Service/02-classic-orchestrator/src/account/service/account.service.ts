@@ -36,7 +36,7 @@ export class AccountService {
     await this.accountStore.update(account);
 
     if (command.getTransferId()) {
-      this.gateway.publishEvent<Deposited>(new Deposited(command.getNo(), command.getAmount(), command.getTransferId()));
+      await this.gateway.publishEvnetOnlocal<Deposited>(new Deposited(command.getNo(), command.getAmount(), command.getTransferId()));
     }
   }
 

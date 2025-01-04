@@ -1,5 +1,7 @@
 
 import { Event } from "src/core/Event";
+// import { Event}
+import { IEvent } from "@nestjs/cqrs";
 
 export class Deposited extends Event {
     accountNo: string;
@@ -33,3 +35,4 @@ export class Deposited extends Event {
     }
     
   }
+

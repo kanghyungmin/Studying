@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus, QueryBus, EventBus } from '@nestjs/cqrs';
+import { EventEmitter2} from '@nestjs/event-emitter';
 
 @Injectable()
 export class Gateway {
@@ -8,6 +9,8 @@ export class Gateway {
     private readonly commandBus: CommandBus,  // CommandBus 주입
     private readonly queryBus: QueryBus,      // QueryBus 주입
     private readonly eventBus: EventBus,      // EventBus 주입
+
+    private readonly eventEmitter: EventEmitter2
   ) {}
 
   // Command를 일반화하여 처리
@@ -26,5 +29,9 @@ export class Gateway {
   publishEvent<T>(event: T): void {
     console.log('Publishing Event: ', event);
     this.eventBus.publish(event);
+  }
+  publishEvnetOnlocal<T>(event : T): void {
+    console.log('Publishing Event on local: ', event);
+    this.eventEmitter.emit(event.constructor.name, event);
   }
 }
