@@ -11,6 +11,7 @@ import { WithdrawHandler } from './account/saga/transfer/WithdrawHandler';
 import { DepositHandler } from './account/saga/transfer/DepositHandler';
 import { AccountService } from './account/service/account.service';
 import { AccountController } from './account/controller/account.controller';
+import { CqrsModule } from '@nestjs/cqrs';
 
 
 // DB_HOST=localhost
@@ -22,7 +23,7 @@ import { AccountController } from './account/controller/account.controller';
 
 @Module({
   imports: [
-
+    CqrsModule,
     TypeOrmModule.forRoot({
       type: 'postgres',              // 데이터베이스 종류: PostgreSQL
       host: 'localhost',             // PostgreSQL 서버 주소 (localhost로 설정)

@@ -1,21 +1,30 @@
-import { EventEmitter2 } from 'eventemitter2';
 import { Injectable } from '@nestjs/common';
-import { Command } from './Command';
-import { Event } from './Event';
+import { CommandBus, QueryBus, EventBus } from '@nestjs/cqrs';
 
 @Injectable()
 export class Gateway {
 
-    constructor(private readonly eventEmitter : EventEmitter2) {
-    }
+  constructor(
+    private readonly commandBus: CommandBus,  // CommandBus 주입
+    private readonly queryBus: QueryBus,      // QueryBus 주입
+    private readonly eventBus: EventBus,      // EventBus 주입
+  ) {}
 
-    send(command : Command) : void {
-        console.log('Command : ', command);
-        this.eventEmitter.emit('command', command);
-    }
+  // Command를 일반화하여 처리
+  async sendCommand<T>(command: T): Promise<void> {
+    console.log('Sending Command: ', command);
+    await this.commandBus.execute(command);
+  }
 
-    public publish(event : Event) : void {
-        console.log('Event : ', event);
-        this.eventEmitter.emit('event', event);
-    }
+  // Query를 일반화하여 처리하고, 응답 타입을 제네릭으로 처리
+  async sendQuery<TQuery, TResult>(query: TQuery): Promise<TResult> {
+    console.log('Sending Query: ', query);
+    return await this.queryBus.execute(query);
+  }
+
+  // Event를 일반화하여 처리
+  publishEvent<T>(event: T): void {
+    console.log('Publishing Event: ', event);
+    this.eventBus.publish(event);
+  }
 }
