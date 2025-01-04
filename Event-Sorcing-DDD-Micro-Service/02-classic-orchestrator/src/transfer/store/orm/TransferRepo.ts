@@ -1,9 +1,9 @@
-import { EntityManager, Repository } from "typeorm";
+import { EntityManager, EntityRepository, Repository } from "typeorm";
 import { TransferORM } from "./TransferORM";
 import { Transfer } from "src/transfer/aggregate/Transfer";
 
 
-
+@EntityRepository(TransferORM)
 export class TransferRepo extends Repository<TransferORM> {
     private readonly tName = 'TB_TRANSFER';
 

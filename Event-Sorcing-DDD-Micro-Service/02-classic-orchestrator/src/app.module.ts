@@ -17,6 +17,7 @@ import { TransferService } from './transfer/service/TransferService';
 import { TransferRepo } from './transfer/store/orm/TransferRepo';
 import { TransferStore } from './transfer/store/TransferStore';
 import { TransferOrchestrator } from './transfer/saga/transfer/TransferOrchestrator';
+import { TransferORM } from './transfer/store/orm/TransferORM';
 
 
 // DB_HOST=localhost
@@ -36,7 +37,7 @@ import { TransferOrchestrator } from './transfer/saga/transfer/TransferOrchestra
       username: 'kang',     // PostgreSQL 사용자명
       password: '1234',     // PostgreSQL 비밀번호
       database: 'testDB',     // 사용할 데이터베이스 이름
-      entities: [AccountORM],        // TypeORM에서 관리할 엔티티들
+      entities: [AccountORM,TransferORM],        // TypeORM에서 관리할 엔티티들
       synchronize: true,             // 개발 환경에서 테이블을 자동으로 생성해줍니다 (주의: 프로덕션에서는 false로 설정)
     }),
     EventEmitterModule.forRoot()

@@ -16,14 +16,15 @@ export class Gateway {
   // Command를 일반화하여 처리
   async sendCommand<T>(command: T): Promise<void> {
     console.log('Sending Command: ', command);
-    await this.commandBus.execute(command);
+    this.eventEmitter.emit(command.constructor.name, command);
   }
 
-  // Query를 일반화하여 처리하고, 응답 타입을 제네릭으로 처리
-  async sendQuery<TQuery, TResult>(query: TQuery): Promise<TResult> {
-    console.log('Sending Query: ', query);
-    return await this.queryBus.execute(query);
-  }
+  // // Query를 일반화하여 처리하고, 응답 타입을 제네릭으로 처리
+  // async sendQuery<TQuery, TResult>(query: TQuery): Promise<void> {
+  //   console.log('Sending Query: ', query);
+  //   // return await this.queryBus.execute(query);
+  //   this.eventEmitter.listeners
+  // }
 
   // Event를 일반화하여 처리
   publishEvent<T>(event: T): void {
