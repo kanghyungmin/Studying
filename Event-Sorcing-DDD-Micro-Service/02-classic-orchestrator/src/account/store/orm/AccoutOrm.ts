@@ -2,7 +2,7 @@ import { Entity, PrimaryColumn, Column, VersionColumn } from 'typeorm';
 import { Account } from '../../aggregate/Account';
 
 
-@Entity('TB_ACCOUNT')
+@Entity({name : 'TB_ACCOUNT'})
 export class AccountORM {
   @PrimaryColumn()
   no: string;

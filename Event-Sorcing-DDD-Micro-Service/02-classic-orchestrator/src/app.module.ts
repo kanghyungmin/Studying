@@ -12,6 +12,11 @@ import { DepositHandler } from './account/saga/transfer/DepositHandler';
 import { AccountService } from './account/service/account.service';
 import { AccountController } from './account/controller/account.controller';
 import { CqrsModule } from '@nestjs/cqrs';
+import { Transfer } from './transfer/aggregate/Transfer';
+import { TransferController } from './transfer/controller/transfer.controller';
+import { TransferService } from './transfer/service/TransferService';
+import { TransferRepo } from './transfer/store/orm/TransferRepo';
+import { TransferStore } from './transfer/store/TransferStore';
 
 
 // DB_HOST=localhost
@@ -37,14 +42,17 @@ import { CqrsModule } from '@nestjs/cqrs';
     EventEmitterModule.forRoot()
 
   ],
-  controllers: [AppController, AccountController],
+  controllers: [AppController, AccountController, TransferController],
   providers: [AppService, 
     AccountStore,
     AccountRepo,
     WithdrawHandler,
     DepositHandler,
     Gateway,
-    AccountService
+    AccountService,
+    TransferService,
+    TransferRepo,
+    TransferStore
   ],
 })
 export class AppModule {}

@@ -6,6 +6,7 @@ import { CreateAccount } from '../command/CreateAccount';
 import { QueryAccount } from '../query/QueryAccount';
 import { Withdraw } from '../command/Withdraw';
 import { Deposit } from '../command/Deposit';
+import { plainToInstance } from 'class-transformer';
 
 
 @Controller('account')
@@ -27,21 +28,17 @@ export class AccountController {
 
   // Deposit
   @Put(':no')
-  handleTransaction(
+  async handleTransaction(
     @Param('no') no: string,
     @Body() command: Deposit | Withdraw,
     @Headers('command') commandHeader: string,
-  ): void {
+  ): Promise<void> {
     if (commandHeader === 'Deposit') {
-      if (command instanceof Deposit) {
-        command.setNo(no);
-        this.accountService.deposit(command);
-      }
+        let deposit = plainToInstance(Deposit, command);
+        
+        await this.accountService.deposit(deposit);
     } else if (commandHeader === 'Withdraw') {
-      if (command instanceof Withdraw) {
-        command.setNo(no);
-        this.accountService.withdraw(command);
-      }
+        await this.accountService.withdraw(command as Withdraw);
     } else {
       throw new Error('Invalid command');
     }

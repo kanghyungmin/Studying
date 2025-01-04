@@ -1,6 +1,7 @@
-import { Repository, EntityManager, SelectQueryBuilder, InsertResult } from 'typeorm';
+import { Repository, EntityManager, SelectQueryBuilder, InsertResult, EntityRepository } from 'typeorm';
 import { AccountORM } from './AccoutOrm';
 
+@EntityRepository(AccountORM)
 export class AccountRepo extends Repository<AccountORM> {
     private readonly userAlias = 'TB_ACCOUNT';
   
@@ -17,7 +18,7 @@ export class AccountRepo extends Repository<AccountORM> {
       query: SelectQueryBuilder<AccountORM>
     ): void {
       if (by.no) {
-        query.andWhere(`${this.userAlias}.id = :id`, { id: by.no });
+        query.andWhere(`${this.userAlias}.no = :no`, { no: by.no });
       }
       
     }
@@ -30,7 +31,7 @@ export class AccountRepo extends Repository<AccountORM> {
       return ormEntity;
     }
   
-    public async addUser(ormUser: AccountORM): Promise<{ id: string }> {
+    public async addUser(ormUser: AccountORM): Promise<{ no: string }> {
   
       const insertResult: InsertResult = await this.createQueryBuilder()
         .insert()
@@ -38,7 +39,8 @@ export class AccountRepo extends Repository<AccountORM> {
         .values([ormUser])
         .execute();
   
-      return { id: insertResult.identifiers[0].id };
+        
+      return { no: insertResult.identifiers[0].no };
     }
 
     public async updateUser(user: AccountORM): Promise<void> {

@@ -16,7 +16,7 @@ export class AccountStore {
   // 계좌 생성
   async create(account: Account): Promise<void> {
     const accountOrm = new AccountORM(account);
-    await this.accountRepository.save(accountOrm);
+    await this.accountRepository.addUser(accountOrm);
   }
 
   // 계좌 조회
