@@ -1,46 +1,68 @@
-// account.controller.ts
-import { Controller, Post, Get, Put, Param, Body, Headers } from '@nestjs/common';
+import { AccountViewStore } from './../view/store/AccountViewStore';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Headers,
+} from '@nestjs/common';
 import { AccountService } from '../service/account.service';
+import { OpenAccount } from '../command/OpenAccount';
 import { Account } from '../aggregate/Account';
-import { CreateAccount } from '../command/OpenAccount';
 import { QueryAccount } from '../query/QueryAccount';
-import { Withdraw } from '../command/Withdraw';
 import { Deposit } from '../command/Deposit';
-import { plainToInstance } from 'class-transformer';
+import { Withdraw } from '../command/Withdraw';
+import { CloseAccount } from '../command/CloseAccount';
 
 
 @Controller('account')
 export class AccountController {
-  constructor(private readonly accountService: AccountService) {}
+  constructor(
+    private readonly accountService: AccountService,
+    private readonly accountViewStore : AccountViewStore
+  ) {}
 
-  // Create Account
   @Post()
-  async createAccount(@Body() command: CreateAccount): Promise<string> {
-    return await this.accountService.createAccount(command);
+  async openAccount(@Body() command: OpenAccount): Promise<string> {
+    return await this.accountService.openAccount(command);
   }
 
-  // Query Account
-  @Get(':no')
-  async queryAccount(@Param('no') no: string): Promise<Account> {
-    const query = new QueryAccount(no);
+  @Get(':accountNo')
+  async queryAccount(@Param('accountNo') accountNo: string): Promise<Account> {
+    const query = new QueryAccount(accountNo);
     return await this.accountService.queryAccount(query);
   }
 
-  // Deposit
-  @Put(':no')
-  async handleTransaction(
-    @Param('no') no: string,
-    @Body() command: Deposit | Withdraw,
-    @Headers('command') commandHeader: string,
+  @Put(':accountNo')
+  async deposit(
+    @Param('accountNo') accountNo: string,
+    @Body() command: Deposit,
+    @Headers('command') commandType: string,
   ): Promise<void> {
-    if (commandHeader === 'Deposit') {
-        let deposit = plainToInstance(Deposit, command);
-        
-        await this.accountService.deposit(deposit);
-    } else if (commandHeader === 'Withdraw') {
-        await this.accountService.withdraw(command as Withdraw);
-    } else {
-      throw new Error('Invalid command');
+    if (commandType === 'Deposit') {
+      command.setNo(accountNo);
+      await this.accountService.deposit(command);
     }
+  }
+
+  @Put(':accountNo')
+  async withdraw(
+    @Param('accountNo') accountNo: string,
+    @Body() command: Withdraw,
+    @Headers('command') commandType: string,
+  ): Promise<void> {
+    if (commandType === 'Withdraw') {
+      command.setNo(accountNo);
+      await this.accountService.withdraw(command);
+    }
+  }
+
+  @Delete(':accountNo')
+  async close(@Param('accountNo') accountNo: string): Promise<void> {
+    const command = new CloseAccount(accountNo);
+    await this.accountService.close(command);
   }
 }

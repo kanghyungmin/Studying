@@ -18,12 +18,12 @@ export class AccountService {
     private readonly aggregateEventStore: AggregateEventStore,
   ) {}
 
-  openAccount(command: OpenAccount): string {
+  async openAccount(command: OpenAccount): Promise<string> {
     const newAccountNo = uuidv4().split('-')[0];
     command.setNo(newAccountNo);
 
     const account = new Account(command);
-    this.aggregateStore.save(account);
+    await this.aggregateStore.save(account);
 
     return newAccountNo;
   }
@@ -59,6 +59,6 @@ export class AccountService {
   async close(command: CloseAccount): Promise<void> {
     const account = await this.aggregateStore.load(command.getNo());
     account.close(command);
-    this.aggregateStore.save(account);
+    await this.aggregateStore.save(account);
   }
 }
