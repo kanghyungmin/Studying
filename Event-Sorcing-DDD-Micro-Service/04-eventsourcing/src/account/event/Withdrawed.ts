@@ -1,16 +1,15 @@
-
-import { Event } from "src/core/Event";
+import { Event } from "src/eventsourcing/core/Event";
 
 export class Withdrawed extends Event {
     accountNo: string;
     amount: number;
-    transferId?: string | null;  // Optional field
+    transferId: string;
   
-    constructor(accountNo: string, amount: number, transferId?: string) {
+    constructor(accountNo: string, amount: number, transferId: string) {
       super();
       this.accountNo = accountNo;
       this.amount = amount;
-      this.transferId = transferId ?? null; // Default to null if undefined
+      this.transferId = transferId;
     }
 
     public getAccountNo(): string {

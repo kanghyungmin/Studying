@@ -1,68 +1,64 @@
 import { Injectable } from '@nestjs/common';
-import { AccountStore } from '../store/AccountStore';
-import { Gateway } from 'src/core/Gateway';
-import { CreateAccount } from '../command/CreateAccount';
+import { AggregateStore } from 'src/eventsourcing/store/AggregateStore';
+import { v4 as uuidv4 } from 'uuid';
 import { Account } from '../aggregate/Account';
+import { AggregateEventStore } from 'src/eventsourcing/store/AggregateEventStore';
+import { OpenAccount } from '../command/OpenAccount';
 import { QueryAccount } from '../query/QueryAccount';
 import { Deposit } from '../command/Deposit';
-import { Withdrawed } from '../event/Withdrawed';
-import { Withdraw } from '../command/Withdraw';
 import { CancelDeposit } from '../command/CancelDeposit';
-import { Deposited } from '../event/Deposited';
-import { WithdrawFailed } from '../event/WithdrawFailed';
+import { Withdraw } from '../command/Withdraw';
+import { CloseAccount } from '../command/CloseAccount';
+
 
 @Injectable()
 export class AccountService {
   constructor(
-    private readonly accountStore: AccountStore,
-    private readonly gateway: Gateway,
+    private readonly aggregateStore: AggregateStore<Account>,
+    private readonly aggregateEventStore: AggregateEventStore,
   ) {}
 
-  async createAccount(command: CreateAccount): Promise<string> {
-    const newNo = this.generateUniqueNo();
-    command.no = newNo;
-    const account = new Account(command, null);
-    await this.accountStore.create(account);
-    return newNo;
+  openAccount(command: OpenAccount): string {
+    const newAccountNo = uuidv4().split('-')[0];
+    command.setNo(newAccountNo);
+
+    const account = new Account(command);
+    this.aggregateStore.save(account);
+
+    return newAccountNo;
   }
 
   async queryAccount(query: QueryAccount): Promise<Account> {
-    return await this.accountStore.retrieve(query.getNo());
+    return await this.aggregateStore.load(query.getNo());
   }
 
   async deposit(command: Deposit): Promise<void> {
-    const account = await this.accountStore.retrieve(command.getNo());
+    const account = await this.aggregateStore.load(command.getNo());
     account.deposit(command);
-    await this.accountStore.update(account);
-
-    if (command.getTransferId()) {
-      await this.gateway.publishEvnetOnlocal<Deposited>(new Deposited(command.getNo(), command.getAmount(), command.getTransferId()));
-    }
+    await this.aggregateStore.save(account);
   }
 
   async cancelDeposit(command: CancelDeposit): Promise<void> {
-    const account = await this.accountStore.retrieve(command.getNo());
+    const account = await this.aggregateStore.load(command.getNo());
     account.cancelDeposit(command);
-    await this.accountStore.update(account);
+    await this.aggregateStore.save(account);
+
+    this.aggregateEventStore.markDelete(command.getTransferId());
   }
 
   async withdraw(command: Withdraw): Promise<void> {
-    const account = await this.accountStore.retrieve(command.getNo());
-
+    const account = await this.aggregateStore.load(command.getNo());
     try {
       account.withdraw(command);
-      await this.accountStore.update(account);
-
-      if (command.getTransferId()) {
-        this.gateway.publishEvnetOnlocal(new Withdrawed(command.getNo(), command.getAmount(), command.getTransferId()));
-      }
+      await this.aggregateStore.save(account);
     } catch (e) {
-        this.gateway.publishEvnetOnlocal(new WithdrawFailed(command.getTransferId()));
-        throw e;
+      throw e;
     }
   }
 
-  private generateUniqueNo(): string {
-    return Math.random().toString(36).substr(2, 9); // Simple unique number generation
+  async close(command: CloseAccount): Promise<void> {
+    const account = await this.aggregateStore.load(command.getNo());
+    account.close(command);
+    this.aggregateStore.save(account);
   }
 }

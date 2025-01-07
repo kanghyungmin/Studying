@@ -2,7 +2,8 @@ import { tokTypes } from './../../../node_modules/acorn/dist/acorn.d';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EventSourcedAggregate, EventOnES } from '../core/EventSourcedAggregate';
+import { EventSourcedAggregate  } from '../core/EventSourcedAggregate';
+import { Event } from '../core/Event';
 import { AggregateRepo } from './orm/AggregateRepo';
 import { AggregateEventRepo } from './orm/AggregateEventRepo';
 import { AggregateORM } from './orm/AggregateORM';
@@ -52,7 +53,7 @@ export class AggregateStore<T extends EventSourcedAggregate> {
     // Load related events
     const eventEntities = await this.aggregateEventRepository.findAllByAggregateIdandDeletedOrderBySequenceAsc(aggregateId, false);
 
-    const events: EventOnES[] = eventEntities.map((entity) =>
+    const events: Event[] = eventEntities.map((entity) =>
       JSON.parse(entity.payload),
     );
 

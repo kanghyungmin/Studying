@@ -1,61 +1,90 @@
+import { EventSourcedAggregate } from "src/eventsourcing/core/EventSourcedAggregate";
 import { CancelDeposit } from "../command/CancelDeposit";
-import { CreateAccount } from "../command/CreateAccount";
+import { CloseAccount } from "../command/CloseAccount";
+
 import { Deposit } from "../command/Deposit";
 import { Withdraw } from "../command/Withdraw";
 
 // account.entity.ts
-export class Account {
+import { EventEmitter2 } from 'eventemitter2';
+import { OpenAccount } from "../command/OpenAccount";
+import { AccountOpened } from "../event/AccountOpened";
+import { Deposited } from "../event/Deposited";
+import { WithdrawFailed } from "../event/WithdrawFailed";
+import { Withdrawed } from "../event/Withdrawed";
+import { DepositCanceled } from "../event/DepositCanceled";
+import { AccountClosed } from "../event/AccountClosed";
+
+export class Account extends EventSourcedAggregate {
     no: string;
     balance: number;
-    private version: number;
   
-    constructor(command : CreateAccount | null, aa :  {
-        no,
-        balance,
-        version
-     } | null) {
-      if(command) 
-        {
-            this.no = command.no
-            this.balance = 0;
-        }
-        else
-            {
-                this.no = aa.no;
-                this.balance = aa.balance;
-                this.version = aa.version;
-            }
+    constructor(command : OpenAccount) {
+      super();
+      this.apply(new AccountOpened(command.no, 0));
     }
      
-  
-    deposit( command : Deposit) {
-      this.balance += command.getAmount();
-    }
-  
-    cancelDeposit(command : CancelDeposit) {
-      this.balance -= command.getAmount();
-    }
-  
-    withdraw(command : Withdraw) {
-      if (this.balance < command.getAmount()) {
-        throw new Error('Not enough balance');
-      }
-      this.balance -= command.getAmount();
-    }
-  
-    getVersion(): number {
-      return this.version;
-    }
-  
-    setVersion(version: number) {
-      this.version = version;
-    }
-
-    getNo(): string {
+    identifier(): string {
       return this.no;
     }
-    getBalance(): number {
-        return this.balance;
+
+    private onAccountOpened(event: AccountOpened): void {
+      this.no = event.accountNo;
+      this.balance = event.balance;
+    }
+  
+    deposit(command: Deposit): void {
+      const event = new Deposited(command.getNo(), command.getAmount(), command.getTransferId());
+      event.setCorrelationId(command.getTransferId());
+      this.apply(event);
+    }
+  
+    private onDeposited(event: Deposited): void {
+      this.balance += event.amount;
+    }
+  
+    withdraw(command: Withdraw): void {
+      if (this.balance < command.getAmount()) {
+        const event = new WithdrawFailed(this.balance, command.getAmount(), command.getTransferId());
+        event.setCorrelationId(command.getTransferId());
+        this.apply(event);
+        throw new Error();
+      }
+  
+      const event = new Withdrawed(command.getNo(), command.getAmount(), command.getTransferId());
+      event.setCorrelationId(command.getTransferId());
+      this.apply(event);
+    }
+  
+    private onWithdrawFailed(event: WithdrawFailed): void {
+      // Handle withdraw failure logic (if needed)
+    }
+  
+    private onWithdrawed(event: Withdrawed): void {
+      this.balance -= event.amount;
+    }
+  
+    cancelDeposit(command: CancelDeposit): void {
+      const event = new DepositCanceled();
+      event.setCorrelationId(command.getTransferId());
+      this.apply(event);
+    }
+  
+    private onDepositCanceled(event: DepositCanceled): void {
+      // Handle deposit cancellation logic (if needed)
+    }
+  
+    close(command: CloseAccount): void {
+      if (this.balance > 0) {
+        throw new Error();
+      }
+  
+      const event = new AccountClosed();
+      this.apply(event);
+    }
+  
+    private onAccountClosed(event: AccountClosed): void {
+      this.markDeleted()
     }
   }
   

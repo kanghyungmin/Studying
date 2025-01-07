@@ -1,18 +1,17 @@
 
-import { Event } from "src/core/Event";
-// import { Event}
-import { IEvent } from "@nestjs/cqrs";
+import { Event } from "src/eventsourcing/core/Event";
+
 
 export class Deposited extends Event {
     accountNo: string;
     amount: number;
-    transferId?: string | null;  // Optional field
+    transferId: string;
   
     constructor(accountNo: string, amount: number, transferId?: string) {
       super();
       this.accountNo = accountNo;
       this.amount = amount;
-      this.transferId = transferId ?? null; // Default to null if undefined
+      this.transferId = transferId
     }
 
     public getAccountNo(): string {

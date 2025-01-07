@@ -2,7 +2,7 @@
 import { Controller, Post, Get, Put, Param, Body, Headers } from '@nestjs/common';
 import { AccountService } from '../service/account.service';
 import { Account } from '../aggregate/Account';
-import { CreateAccount } from '../command/CreateAccount';
+import { CreateAccount } from '../command/OpenAccount';
 import { QueryAccount } from '../query/QueryAccount';
 import { Withdraw } from '../command/Withdraw';
 import { Deposit } from '../command/Deposit';

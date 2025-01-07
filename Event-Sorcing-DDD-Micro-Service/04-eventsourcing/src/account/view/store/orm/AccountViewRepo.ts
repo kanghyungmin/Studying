@@ -1,21 +1,21 @@
 import { Repository, EntityManager, SelectQueryBuilder, InsertResult, EntityRepository } from 'typeorm';
-import { AccountORM } from './AccoutOrm';
+import { AccountViewORM } from './AccountViewORM';
 
-@EntityRepository(AccountORM)
-export class AccountRepo extends Repository<AccountORM> {
+@EntityRepository(AccountViewORM)
+export class AccountViewRepo extends Repository<AccountViewORM> {
     private readonly userAlias = 'TB_ACCOUNT';
   
     constructor(manager: EntityManager) {
-      super(AccountORM, manager);
+      super(AccountViewORM, manager);
     }
   
-    private buildUserQueryBuilder(): SelectQueryBuilder<AccountORM> {
+    private buildUserQueryBuilder(): SelectQueryBuilder<AccountViewORM> {
       return this.createQueryBuilder(this.userAlias).select();
     }
   
     private extendQueryWithByProperties(
       by: { no : string;},
-      query: SelectQueryBuilder<AccountORM>
+      query: SelectQueryBuilder<AccountViewORM>
     ): void {
       if (by.no) {
         query.andWhere(`${this.userAlias}.no = :no`, { no: by.no });
@@ -23,7 +23,7 @@ export class AccountRepo extends Repository<AccountORM> {
       
     }
   
-    public async findUser(by: { no: string;  }): Promise<AccountORM> {
+    public async findUser(by: { no: string;  }): Promise<AccountViewORM> {
       const query = this.buildUserQueryBuilder();
       this.extendQueryWithByProperties(by, query);
   
@@ -31,11 +31,11 @@ export class AccountRepo extends Repository<AccountORM> {
       return ormEntity;
     }
   
-    public async addUser(ormUser: AccountORM): Promise<{ no: string }> {
+    public async addUser(ormUser: AccountViewORM): Promise<{ no: string }> {
   
       const insertResult: InsertResult = await this.createQueryBuilder()
         .insert()
-        .into(AccountORM)
+        .into(AccountViewORM)
         .values([ormUser])
         .execute();
   
@@ -43,7 +43,7 @@ export class AccountRepo extends Repository<AccountORM> {
       return { no: insertResult.identifiers[0].no };
     }
 
-    public async updateUser(user: AccountORM): Promise<void> {
+    public async updateUser(user: AccountViewORM): Promise<void> {
       await this.update(user.no, user);
     }
   }

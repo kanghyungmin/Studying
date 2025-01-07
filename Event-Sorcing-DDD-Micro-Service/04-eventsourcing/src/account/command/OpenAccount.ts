@@ -1,8 +1,8 @@
-import { Command } from "src/core/Command";
+import { Command } from "src/eventsourcing/core/Command";
 
 
 
-export class CreateAccount extends Command {
+export class OpenAccount extends Command {
     public no : string;
     constructor(
         no : string,

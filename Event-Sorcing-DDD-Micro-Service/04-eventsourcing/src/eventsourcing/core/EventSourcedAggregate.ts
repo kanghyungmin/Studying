@@ -1,10 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-
-export interface EventOnES {
-  sequence: number;
-  [key: string]: any;
-}
+import { Event } from './Event';
 
 export interface Snapshot {
   state: string; // JSON string representation of the aggregate
@@ -13,18 +8,18 @@ export interface Snapshot {
 
 @Injectable()
 export abstract class EventSourcedAggregate {
-  private events: EventOnES[] = [];
+  private events: Event[] = [];
   private inSaga: boolean = false;
   private deleted: boolean = false;
   private sequence: number = 0;
   private version: number = 0;
   private snapshot: Snapshot | null = null;
 
-  constructor(private readonly eventEmitter: EventEmitter2) {}
+  constructor() {}
 
   abstract identifier(): string;
 
-  apply(event: EventOnES, isNew: boolean = true): void {
+    apply(event: Event, isNew: boolean = true): void {
     const eventHandlerName = `on${event.constructor.name}`;
     const eventHandler = (this as any)[eventHandlerName];
 
@@ -39,11 +34,10 @@ export abstract class EventSourcedAggregate {
     eventHandler.call(this, event);
 
     if (isNew) {
-      event.sequence = ++this.sequence;
+      event.setSequence( ++this.sequence);
       this.events.push(event);
-      this.eventEmitter.emit(event.constructor.name, event);
     } else {
-      this.sequence = event.sequence;
+      this.sequence = event.getSequence();
     }
   }
 
@@ -61,7 +55,7 @@ export abstract class EventSourcedAggregate {
     return this.snapshot;
   }
 
-  getEvents(): EventOnES[] {
+  getEvents(): Event[] {
     return this.events;
   }
 
