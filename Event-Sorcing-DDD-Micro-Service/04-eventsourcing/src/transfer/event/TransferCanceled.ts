@@ -1,4 +1,4 @@
-import { Event } from "src/core/Event";
+import { Event } from "src/eventsourcing/core/Event";
 
 
 export class TransferCanceled extends Event {

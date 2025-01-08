@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 
 import { v4 as uuidv4 } from 'uuid';
 import { TransferStore } from '../store/TransferStore';
-import { Gateway } from 'src/core/Gateway';
+
 import { TransferMoney } from '../command/TransferMoney';
 import { Transfer } from '../aggregate/Transfer';
 import { TransferCreated } from '../event/TransferCreated';
@@ -11,6 +11,7 @@ import { CancelTransfer } from '../command/CancelTransfer';
 import { CompleteDeposit } from '../command/CompleteDeposit';
 import { CompleteWithdraw } from '../command/CompleteWithdraw';
 import { TransferCanceled } from '../event/TransferCanceled';
+import { Gateway } from 'src/eventsourcing/core/Gateway';
 
 @Injectable()
 export class TransferService {

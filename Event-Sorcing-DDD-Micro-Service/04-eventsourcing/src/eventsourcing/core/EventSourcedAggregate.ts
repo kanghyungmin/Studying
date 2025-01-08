@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Event } from './Event';
+import { Snapshot } from './Snapshot';
 
-export interface Snapshot {
-  state: string; // JSON string representation of the aggregate
-  time: number; // Timestamp
-}
 
 @Injectable()
 export abstract class EventSourcedAggregate {
@@ -43,11 +40,8 @@ export abstract class EventSourcedAggregate {
 
   takeSnapshot(): void {
     const currentTime = Date.now();
-    if (!this.snapshot || currentTime - this.snapshot.time > 600000) {
-      this.snapshot = {
-        state: JSON.stringify(this),
-        time: currentTime,
-      };
+    if (!this.snapshot || currentTime - this.snapshot.getTime() > 600000) {
+      this.snapshot = new Snapshot(JSON.stringify(this), currentTime);
     }
   }
 

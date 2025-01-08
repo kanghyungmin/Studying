@@ -7,7 +7,8 @@ import { Withdraw } from 'src/account/command/Withdraw';
 import { Deposited } from 'src/account/event/Deposited';
 import { Withdrawed } from 'src/account/event/Withdrawed';
 import { WithdrawFailed } from 'src/account/event/WithdrawFailed';
-import { Gateway } from 'src/core/Gateway';
+import { Gateway } from 'src/eventsourcing/core/Gateway';
+
 import { CancelTransfer } from 'src/transfer/command/CancelTransfer';
 import { CompleteDeposit } from 'src/transfer/command/CompleteDeposit';
 import { CompleteWithdraw } from 'src/transfer/command/CompleteWithdraw';
@@ -69,9 +70,8 @@ export class TransferOrchestrator {
   async handleTransferCanceled(event: TransferCanceled) {
     const cancelDepositCommand = new CancelDeposit(
       event.getToAccount(),
-      event.getAmount(),
-      event.getTransferId()
-    );
+      event.getTransferId())
+    
     await this.gateway.sendCommand(cancelDepositCommand);
     console.log(`handleTransferCanceled`)
   }

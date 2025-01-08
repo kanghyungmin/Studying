@@ -1,4 +1,4 @@
-import { Command } from "src/core/Command";
+import { Command } from "src/eventsourcing/core/Command";
 
 
 
