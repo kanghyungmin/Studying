@@ -14,17 +14,17 @@ export abstract class EventSourcedSaga {
 
   public abstract completed(): boolean;
 
-  public apply(event: Event, isNew: boolean = true): void {
-      const eventHandlerName = `on${event.constructor.name}`;
-      (this as any)[eventHandlerName](event);
+public apply(event: Event, isNew: boolean = true): void {
+    const eventHandlerName = `on${event.constructor.name}`;
+    (this as any)[eventHandlerName](event);
 
-      if (isNew) {
-        event.setSequence( ++this.sequence);
-      this.events.push(event);
-      } else {
-        this.sequence = event.getSequence();
-      }
-  }
+    if (isNew) {
+    event.setSequence( ++this.sequence);
+    this.events.push(event);
+    } else {
+    this.sequence = event.getSequence();
+    }
+}
 
   public getEvents(): Event[] {
     return this.events;

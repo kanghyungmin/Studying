@@ -29,6 +29,7 @@ export class TransferOrchestrator {
 
   @OnEvent(TransferCreated.name) 
   async handleTransferCreated(event: TransferCreated) {
+    
     const depositCommand = new Deposit(event.toAccount, event.amount, event.transferId);
     await this.gateway.sendCommand(depositCommand);
   }

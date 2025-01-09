@@ -23,7 +23,7 @@ import { TransferCanceled } from '../event/TransferCanceled';
 
 
 @Injectable()
-export class TransferSagaCoordinator implements OnModuleInit {
+export class TransferSagaCoordinator  {
   private readonly logger = new Logger(TransferSagaCoordinator.name);
   private readonly SAGA_NAME = 'Transfer';
 
@@ -39,6 +39,7 @@ export class TransferSagaCoordinator implements OnModuleInit {
 
   @OnEvent(TransferCreated.name)
   async onTransferCreated(event: TransferCreated) {
+    console.log("in onTransferCreated");
     const command = new BeginTransferSaga(
       event.transferId,
       event.fromAccountNo,
@@ -50,16 +51,19 @@ export class TransferSagaCoordinator implements OnModuleInit {
     await this.sagaStore.save(saga);
 
     console.log("before scheduleSagaTimeout");
-    await this.scheduleSagaTimeout(event.transferId);
+    // await this.scheduleSagaTimeout(event.transferId);
     console.log("after scheduleSagaTimeout");
   }
 
   // Schedule timeout task
-  @Timeout(5000)
+  // @Timeout(5000)
   async scheduleSagaTimeout(transferId: string) {
     console.log("in scheduleSagaTimeout");
-    const sagaTimeoutEvent = new SagaTimeout(transferId, this.SAGA_NAME,this.eventEmitter);
-    sagaTimeoutEvent.run();
+     // 5초 뒤에 실행
+    setTimeout(() => {
+      const sagaTimeoutEvent = new SagaTimeout(transferId, this.SAGA_NAME, this.eventEmitter);
+      sagaTimeoutEvent.run();
+    }, 5000); 
   }
 
   // Event Listener: SagaTimeExpired
