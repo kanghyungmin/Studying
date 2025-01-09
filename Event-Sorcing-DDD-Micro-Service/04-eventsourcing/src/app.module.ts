@@ -8,12 +8,7 @@ import { DepositHandler } from './account/saga/transfer/DepositHandler';
 import { AccountService } from './account/service/account.service';
 import { AccountController } from './account/controller/account.controller';
 import { CqrsModule } from '@nestjs/cqrs';
-import { TransferController } from './transfer/controller/transfer.controller';
-import { TransferService } from './transfer/service/TransferService';
-import { TransferRepo } from './transfer/store/orm/TransferRepo';
-import { TransferStore } from './transfer/store/TransferStore';
-import { TransferOrchestrator } from './transfer/saga/transfer/TransferOrchestrator';
-import { TransferORM } from './transfer/store/orm/TransferORM';
+
 import { ScheduleModule } from '@nestjs/schedule';
 import { Gateway } from './eventsourcing/core/Gateway';
 import { AccountEventHandler } from './account/view/AccountEventHandler';
@@ -36,6 +31,11 @@ import { AggregateORM } from './eventsourcing/store/orm/AggregateORM';
 import { AggregateEventORM } from './eventsourcing/store/orm/AggreageteEventORM';
 import { AggregateEventRepo } from './eventsourcing/store/orm/AggregateEventRepo';
 import { AggregateRepo } from './eventsourcing/store/orm/AggregateRepo';
+import { TransferController } from './transfer/endpoint/transfer.controller';
+import { TransferService } from './transfer/service/transfer.service';
+import { TransferSaga } from './transfer/saga/TransferSaga';
+import { TransferSagaCoordinator } from './transfer/saga/TransferSagaCoordinator';
+import { BeginTransferSaga } from './transfer/saga/command/BeginTransferSaga';
 
 
 // DB_HOST=localhost
@@ -84,6 +84,15 @@ import { AggregateRepo } from './eventsourcing/store/orm/AggregateRepo';
     SagaRepository,
     SagaEventStore,
     SagaStore,
+
+
+    //tansfer
+    TransferController,
+    TransferService,
+    TransferSaga,
+    TransferSagaCoordinator,
+    BeginTransferSaga
+
   ],
 })
 export class AppModule {}

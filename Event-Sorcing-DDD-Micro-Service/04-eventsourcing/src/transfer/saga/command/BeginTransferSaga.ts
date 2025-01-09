@@ -1,13 +1,12 @@
 import { Command } from "src/eventsourcing/core/Command";
 
-export class TransferMoney extends Command{
+export class BeginTransferSaga {
   constructor(
     public  transferId: string,
     public  fromAccountNo: string,
     public  toAccountNo: string,
     public  amount: number,
   ) {
-    super();
   }
 public getTransferId(): string {
     return this.transferId;

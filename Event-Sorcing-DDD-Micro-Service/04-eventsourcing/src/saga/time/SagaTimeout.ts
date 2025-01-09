@@ -11,7 +11,7 @@ export class SagaTimeout {
     private readonly applicationEventPublisher: EventEmitter2,
   ) {}
 
-  run() {
+   run() {
     const sagaTimeExpired = new SagaTimeExpired(this.correlationId, this.sagaType);
     this.applicationEventPublisher.emit('sagaTimeExpired', sagaTimeExpired);
   }

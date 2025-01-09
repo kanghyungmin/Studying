@@ -1,6 +1,6 @@
-import { Command } from "src/eventsourcing/core/Command";
+import { Event } from "src/eventsourcing/core/Event";
 
-export class TransferMoney extends Command{
+export class TransferSagaBegan extends Event{
   constructor(
     public  transferId: string,
     public  fromAccountNo: string,

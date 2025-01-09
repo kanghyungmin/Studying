@@ -16,10 +16,7 @@ export abstract class EventSourcedSaga {
 
   public apply(event: Event, isNew: boolean = true): void {
       const eventHandlerName = `on${event.constructor.name}`;
-      const eventHandler = (this as any)[eventHandlerName];
-      
-      
-      eventHandler.call(this, event);
+      (this as any)[eventHandlerName](event);
 
       if (isNew) {
         event.setSequence( ++this.sequence);
