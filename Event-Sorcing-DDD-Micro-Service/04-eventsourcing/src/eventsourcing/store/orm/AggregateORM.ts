@@ -7,6 +7,8 @@ import {
   } from 'typeorm';
 import { JsonUtilService } from '../../../util/JsonUtil';
 import { ClassConstructor } from 'class-transformer';
+import { Account } from 'src/account/aggregate/Account';
+import { classMap } from './AggreageteEventORM';
   
   @Entity('TB_AGGREGATE')
   export class AggregateORM {
@@ -36,7 +38,7 @@ import { ClassConstructor } from 'class-transformer';
     }
   
     public toAggregate<T>(): T {
-        let aggregateConstructor = this.type as unknown as ClassConstructor<T>;
+        let aggregateConstructor = classMap[this.type as string] as ClassConstructor<T>;
         let aggregate = JsonUtilService.fromJson<T>(
             "{}",
             aggregateConstructor

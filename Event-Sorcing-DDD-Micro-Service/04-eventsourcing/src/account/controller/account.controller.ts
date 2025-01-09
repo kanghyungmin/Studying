@@ -16,6 +16,7 @@ import { QueryAccount } from '../query/QueryAccount';
 import { Deposit } from '../command/Deposit';
 import { Withdraw } from '../command/Withdraw';
 import { CloseAccount } from '../command/CloseAccount';
+import { plainToInstance } from 'class-transformer';
 
 
 @Controller('account')
@@ -27,7 +28,7 @@ export class AccountController {
 
   @Post()
   async openAccount(@Body() command: OpenAccount): Promise<string> {
-    return await this.accountService.openAccount(command);
+    return await this.accountService.openAccount(plainToInstance(OpenAccount, command))
   }
 
   @Get(':accountNo')

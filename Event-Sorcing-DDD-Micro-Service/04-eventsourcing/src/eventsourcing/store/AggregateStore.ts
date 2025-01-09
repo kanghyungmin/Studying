@@ -7,6 +7,7 @@ import { Event } from '../core/Event';
 import { AggregateRepo } from './orm/AggregateRepo';
 import { AggregateEventRepo } from './orm/AggregateEventRepo';
 import { AggregateORM } from './orm/AggregateORM';
+import { AggregateEventORM } from './orm/AggreageteEventORM';
 
 
 @Injectable()
@@ -25,15 +26,12 @@ export class AggregateStore<T extends EventSourcedAggregate> {
       version: aggregate.getVersion(),
       deleted: aggregate.isDeleted(),
     });
-    //await this.aggregateRepository.save(aggregateORM);
+    await this.aggregateRepository.save(aggregateORM);
     // Save related events
     const eventEntities = aggregate
       .getEvents()
       .map((event) =>
-        this.aggregateEventRepository.create({
-          aggregateId: aggregate.identifier(),
-          ...event,
-        }),
+        new AggregateEventORM(aggregate.identifier(), event), 
       );
     await this.aggregateEventRepository.save(eventEntities);
   }
@@ -54,8 +52,10 @@ export class AggregateStore<T extends EventSourcedAggregate> {
     const eventEntities = await this.aggregateEventRepository.findAllByAggregateIdandDeletedOrderBySequenceAsc(aggregateId, false);
 
     const events: Event[] = eventEntities.map((entity) =>
-      JSON.parse(entity.payload),
+      // JSON.parse(entity.payload),
+      entity.toEvent()
     );
+  
 
     // Reconstruct the aggregate
     const aggregate: EventSourcedAggregate = aggregateORM.toAggregate()

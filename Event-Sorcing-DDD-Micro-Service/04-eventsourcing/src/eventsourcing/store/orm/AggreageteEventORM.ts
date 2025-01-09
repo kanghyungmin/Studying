@@ -1,22 +1,24 @@
 import { Class } from './../../../../node_modules/@types/estree/index.d';
 import { Constructor } from './../../../../node_modules/make-error/index.d';
-import { Entity, PrimaryColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { Event } from '../../core/Event';
 import { JsonUtilService } from '../../../util/JsonUtil';
 import { ClassConstructor } from 'class-transformer';
+import { Account } from 'src/account/aggregate/Account';
+import { AccountOpened } from 'src/account/event/AccountOpened';
 
 @Entity('TB_AGGREGATE_EVENT')
 export class AggregateEventORM {
   @PrimaryColumn()
   id: string;
 
-  @Column()
+  @Column({nullable: true})
   type: string;
 
   @Column()
   aggregateId: string;
 
-  @Column('text') // JSON 데이터를 저장하므로 text 타입 사용
+  @Column('text', {nullable : true}) // JSON 데이터를 저장하므로 text 타입 사용
   payload: string;
 
   @Column({ type: 'bigint' })
@@ -53,8 +55,9 @@ export class AggregateEventORM {
 
   toEvent<T extends Event>(): T {
     try {
-      let test : ClassConstructor<T>  = this.type as unknown as ClassConstructor<T>;
+      let test : ClassConstructor<T>  = classMap[this.type as string] as ClassConstructor<T>;
       let eventClass = JsonUtilService.fromJson<T>(this.payload, test);
+
       eventClass.setEventId(this.id);
       eventClass.setSequence(this.sequence);
       eventClass.setTime(this.time);
@@ -68,3 +71,9 @@ export class AggregateEventORM {
     }
   }
 }
+
+
+export const classMap: Record<string, ClassConstructor<any>> = {
+  Account, // "Account" 문자열을 Account 생성자로 매핑
+  AccountOpened
+};

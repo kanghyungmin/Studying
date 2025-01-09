@@ -19,9 +19,11 @@ export class Account extends EventSourcedAggregate {
     no: string;
     balance: number;
   
-    constructor(command : OpenAccount) {
+    constructor(command?: OpenAccount) {
       super();
-      this.apply(new AccountOpened(command.no, 0));
+      if(command) {
+          this.apply(new AccountOpened(command.no, 0));
+      }
     }
      
     identifier(): string {
