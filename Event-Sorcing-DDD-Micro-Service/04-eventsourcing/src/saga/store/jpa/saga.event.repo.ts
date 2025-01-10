@@ -4,7 +4,7 @@ import { SagaEvent } from './saga.event.orm';
 
 @EntityRepository(SagaEvent)
 export class SagaEventRepository extends Repository<SagaEvent> {
-  private readonly tName = 'TB_SAGA_EVENT';TB_SAGA_EVENT
+  private readonly tName = 'TB_SAGA_EVENT';
 
   constructor(manager: EntityManager) {
     super(

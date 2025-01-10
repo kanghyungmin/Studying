@@ -12,10 +12,7 @@ import { Event } from 'src/eventsourcing/core/event';
 @Injectable()
 export class SagaStore<T extends EventSourcedSaga> {
   constructor(
-    @InjectRepository(SagaRepository)
     private readonly sagaRepository: SagaRepository,
-
-    @InjectRepository(SagaEventRepository)
     private readonly sagaEventRepository: SagaEventRepository,
   ) {}
 

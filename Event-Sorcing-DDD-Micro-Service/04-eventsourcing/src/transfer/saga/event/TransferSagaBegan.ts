@@ -2,12 +2,14 @@ import { Event } from "src/eventsourcing/core/Event";
 
 export class TransferSagaBegan extends Event{
   constructor(
+    
     public  transferId: string,
     public  fromAccountNo: string,
     public  toAccountNo: string,
     public  amount: number,
   ) {
     super();
+    console.log('TransferSagaBegan')
   }
 public getTransferId(): string {
     return this.transferId;

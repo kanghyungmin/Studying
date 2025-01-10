@@ -6,16 +6,29 @@ import { TransferMoney } from '../command/TransferMoney';
 import { QueryTransfer } from '../query/QueryTransfer';
 import { CompleteTransfer } from '../command/CompleteTransfer';
 import { CancelTransfer } from '../command/CancelTransfer';
+import { Gateway } from 'src/eventsourcing/core/Gateway';
+import { TransferCreated } from '../event/TransferCreated';
 
 @Injectable()
 export class TransferService {
-  constructor(private readonly aggregateStore: AggregateStore<Transfer>) {}
+  constructor(
+    private readonly aggregateStore: AggregateStore<Transfer>,
+    private readonly gateway : Gateway,
+  ) {}
 
   async transferMoney(command: TransferMoney): Promise<string> {
     const newTransferId = uuidv4().split('-')[0];
     command.transferId = newTransferId;
     const transfer = new Transfer(command);
+    
     await this.aggregateStore.save(transfer);
+    this.gateway.publishEvnetOnlocal<TransferCreated>(new TransferCreated(
+      command.transferId,
+      command.fromAccountNo,
+      command.toAccountNo,
+      command.amount,
+    ));
+    
 
     return newTransferId;
   }

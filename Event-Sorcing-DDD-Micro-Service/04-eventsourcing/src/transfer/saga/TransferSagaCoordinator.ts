@@ -68,7 +68,7 @@ export class TransferSagaCoordinator  {
 
   // Event Listener: SagaTimeExpired
   @OnEvent(SagaTimeExpired.name)
-  async onSagaTimeExpired(event: SagaTimeExpired) {
+  async onSagaTimeExpired(event: SagaTimeExpired) {1
     if (event.sagaType !== this.SAGA_NAME) return;
 
     const saga: TransferSaga = await this.sagaStore.load(event.correlationId);

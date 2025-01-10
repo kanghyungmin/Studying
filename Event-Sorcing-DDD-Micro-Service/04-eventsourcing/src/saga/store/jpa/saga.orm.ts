@@ -25,7 +25,7 @@ export class Saga {
         this.id = saga.identifier();
         this.type = saga.constructor.name;
         this.sequence = saga.getSequence();
-        // this.inSaga = isInSaga;
+        this.inSaga = false;
         this.version = saga.getVersion();
     }
   }

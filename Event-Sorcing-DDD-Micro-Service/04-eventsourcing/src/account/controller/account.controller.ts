@@ -44,8 +44,10 @@ export class AccountController {
     @Headers('command') commandType: string,
   ): Promise<void> {
     if (commandType === 'Deposit') {
-      command.setNo(accountNo);
-      await this.accountService.deposit(command);
+      // command.setNo(accountNo);
+      let deposit = plainToInstance(Deposit, command);
+      deposit.setNo(accountNo);
+      await this.accountService.deposit(deposit);
     }
   }
 
@@ -57,7 +59,7 @@ export class AccountController {
   ): Promise<void> {
     if (commandType === 'Withdraw') {
       command.setNo(accountNo);
-      await this.accountService.withdraw(command);
+      await this.accountService.withdraw(plainToInstance(Withdraw, command));
     }
   }
 

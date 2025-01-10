@@ -36,6 +36,7 @@ import { TransferService } from './transfer/service/transfer.service';
 import { TransferSaga } from './transfer/saga/TransferSaga';
 import { TransferSagaCoordinator } from './transfer/saga/TransferSagaCoordinator';
 import { BeginTransferSaga } from './transfer/saga/command/BeginTransferSaga';
+import { TransferAccountSagaCoordinator } from './account/saga/transfer/TransferAccountSagaCoordinator';
 
 
 // DB_HOST=localhost
@@ -62,8 +63,7 @@ import { BeginTransferSaga } from './transfer/saga/command/BeginTransferSaga';
     EventEmitterModule.forRoot()
 
   ],
-  controllers: [AppController,
-  AccountController], //TransferController],
+  controllers: [AppController,AccountController, TransferController],
   providers: [AppService, 
     AccountEventHandler,
     AccountViewStore,
@@ -73,6 +73,7 @@ import { BeginTransferSaga } from './transfer/saga/command/BeginTransferSaga';
     AggregateEventStore,
     AggregateEventRepo,
     AggregateRepo,
+    TransferAccountSagaCoordinator,
     
 
 
@@ -91,8 +92,9 @@ import { BeginTransferSaga } from './transfer/saga/command/BeginTransferSaga';
     TransferService,
     TransferSaga,
     TransferSagaCoordinator,
-    BeginTransferSaga
-
+    
+    BeginTransferSaga,
+    SagaEventRelay
   ],
 })
 export class AppModule {}

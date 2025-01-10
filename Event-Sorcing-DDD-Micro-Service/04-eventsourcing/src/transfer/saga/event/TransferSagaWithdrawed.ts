@@ -6,6 +6,7 @@ export class TransferSagaWithdrawed extends Event{
     
   ) {
     super();
+    console.log('TransferSagaWithdrawed')
   }
     public getTransferId(): string {
         return this.transferId;

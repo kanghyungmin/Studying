@@ -1,3 +1,4 @@
+// import { Gateway } from './../../../../02-classic-orchestrator/src/core/Gateway';
 import { AggregateRoot } from '@nestjs/cqrs';
 import { EventSourcedAggregate } from 'src/eventsourcing/core/EventSourcedAggregate';
 import { State } from './State';
@@ -7,9 +8,10 @@ import { TransferCreated } from '../event/TransferCreated';
 import { TransferMoney } from '../command/TransferMoney';
 import { CancelTransfer } from '../command/CancelTransfer';
 import { TransferCanceled } from '../event/TransferCanceled';
+import { Gateway } from 'src/eventsourcing/core/Gateway';
 
 
-export class Transfer extends EventSourcedAggregate {
+export class Transfer extends EventSourcedAggregate{
   transferId: string;
   fromAccountNo: string;
   toAccountNo: string;
@@ -43,6 +45,8 @@ export class Transfer extends EventSourcedAggregate {
     this.state = State.Unknown;
 
     this.startSaga();
+    //이벤트 발행
+    // this.Gateway.
   }
 
   completeTransfer(command: CompleteTransfer): void {

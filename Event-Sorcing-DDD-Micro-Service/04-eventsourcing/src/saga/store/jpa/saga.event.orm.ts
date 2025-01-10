@@ -2,6 +2,7 @@ import { Entity, PrimaryColumn, Column } from 'typeorm';
 import { Event } from 'src/eventsourcing/core/event';  // Adjust the import path as necessary
 import { JsonUtilService } from '../../../util/JsonUtil';
 import { ClassConstructor } from 'class-transformer';
+import { classMap } from 'src/eventsourcing/store/orm/AggreageteEventORM';
 
 @Entity('TB_SAGA_EVENT')
 export class SagaEvent {
@@ -40,7 +41,7 @@ export class SagaEvent {
 
   toEvent<T extends Event>(): T {
     try {
-        let test : ClassConstructor<T>  = this.type as unknown as ClassConstructor<T>;
+        let test : ClassConstructor<T>  = classMap[this.type as string] as ClassConstructor<T>;
         let eventClass = JsonUtilService.fromJson<T>(this.payload, test);
         eventClass.setEventId(this.id);
         eventClass.setSequence(this.sequence);

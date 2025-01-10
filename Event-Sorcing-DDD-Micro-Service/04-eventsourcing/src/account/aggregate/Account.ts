@@ -14,12 +14,16 @@ import { WithdrawFailed } from "../event/WithdrawFailed";
 import { Withdrawed } from "../event/Withdrawed";
 import { DepositCanceled } from "../event/DepositCanceled";
 import { AccountClosed } from "../event/AccountClosed";
+import { Gateway } from "src/eventsourcing/core/Gateway";
+
 
 export class Account extends EventSourcedAggregate {
     no: string;
     balance: number;
   
-    constructor(command?: OpenAccount) {
+    constructor(
+      command?: OpenAccount,
+      ) {
       super();
       if(command) {
           this.apply(new AccountOpened(command.no, 0));
@@ -43,6 +47,9 @@ export class Account extends EventSourcedAggregate {
   
     private onDeposited(event: Deposited): void {
       this.balance += event.amount;
+
+      //
+      // this.gateway.publishEvnetOnlocal(event);
     }
   
     withdraw(command: Withdraw): void {

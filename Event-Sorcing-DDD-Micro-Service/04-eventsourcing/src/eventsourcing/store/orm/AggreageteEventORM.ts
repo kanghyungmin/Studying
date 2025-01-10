@@ -6,6 +6,12 @@ import { JsonUtilService } from '../../../util/JsonUtil';
 import { ClassConstructor } from 'class-transformer';
 import { Account } from 'src/account/aggregate/Account';
 import { AccountOpened } from 'src/account/event/AccountOpened';
+import { AccountClosed } from 'src/account/event/AccountClosed';
+import { DepositCanceled } from 'src/account/event/DepositCanceled';
+import { Deposited } from 'src/account/event/Deposited';
+import { Withdrawed } from 'src/account/event/Withdrawed';
+import { WithdrawFailed } from 'src/account/event/WithdrawFailed';
+import { TransferSagaBegan } from 'src/transfer/saga/event/TransferSagaBegan';
 
 @Entity('TB_AGGREGATE_EVENT')
 export class AggregateEventORM {
@@ -75,5 +81,12 @@ export class AggregateEventORM {
 
 export const classMap: Record<string, ClassConstructor<any>> = {
   Account, // "Account" 문자열을 Account 생성자로 매핑
-  AccountOpened
+  AccountOpened,
+  AccountClosed,
+  DepositCanceled,
+  Deposited,
+  Withdrawed,
+  WithdrawFailed,
+  TransferSagaBegan,  
+  
 };
