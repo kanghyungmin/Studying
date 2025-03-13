@@ -282,8 +282,8 @@ spec:
   - client auth
 
 cat john.csr | base64 | tr -d "\n"
-k certificate approve john-develope
 
+k certificate approve john-developer
 kubectl create role developer --verb=create,update,delete,get,list,watch --resource=pods -n development
 kubectl create rolebinding john-developer --role=developer --user=john -n development
 
