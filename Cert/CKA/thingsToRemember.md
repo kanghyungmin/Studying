@@ -45,7 +45,8 @@ k expose pod my-static-pod-cka2560 --name static-pod-service --type=NodePort --p
   k -n lima-control exec -it controller-586d6657-gdmch -- sh
 
 // container search 
-crictl ps
+crictl ps containerId
+crictl inspect containerId
 
 //daemon set
  kubectl -n kube-system get ds
@@ -55,9 +56,6 @@ kubectl -n kube-system get deploy
 
 //Secret file 생성
  k -n secret create secret generic secret2 --from-literal=user=user1 --from-literal=pass=1234
-
-
-
 
 # cka2560:/home/candidate/11.yaml
 k exec -n secret secret-pod -- sh "sleep 1d"
@@ -88,7 +86,10 @@ spec:
     - name: MY_NODE_NAME                                                          # add
       valueFrom:                                                                  # add
         fieldRef:                                                                 # add
-          fieldPath: spec.nodeName     
+          fieldPath: spec.nodeName   
+    // another example2 
+    - name: "name"
+      value: "alpha"  
     - name: APP_PASS                      # add
       valueFrom:                          # add
         secretKeyRef:                     # add
@@ -254,6 +255,7 @@ https://velog.io/@dm911/kubernetes-CKA-study-last-Mock-Exam-3-lightning-lab
 https://velog.io/@dm911/kubernetes-CKA-study-36-CKA-%EC%8B%9C%ED%97%98%EC%A0%91%EC%88%98-%EB%B0%8F-killer.sh-%ED%92%80%EC%9D%B4
 [gosmdochi.tistory.com/7](https://gosmdochi.tistory.com/8)
 https://gosmdochi.tistory.com/9?category=1028041
+https://wlsdn3004.tistory.com/45
 
 
 k expose pod podName --type=Nordport --port=80 --name mess
@@ -284,3 +286,58 @@ k certificate approve john-develope
 
 kubectl create role developer --verb=create,update,delete,get,list,watch --resource=pods -n development
 kubectl create rolebinding john-developer --role=developer --user=john -n development
+
+kubectl create serviceaccount pvviewer
+kubectl create clusterrole pvviewer-role --verb=list --resource=persistentvolumes
+kubectl create clusterrole pvviewer-role-binding --clusterrole=pvviewer-role --serviceaccount=default:pvviewer
+
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: pvviewer
+  name: pvviewer
+spec:
+  serviceAccountName: pvviewer
+  containers:
+  - image: redis
+    name: pvviewer
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+//taint 정의
+kubectl taint nodes node01 env_type=production:NoSchedule
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: prod-redis
+  name: prod-redis
+spec:
+  containers:
+  - image: redis:alpine
+    name: prod-redis
+    resources: {}
+  tolerations:
+  - key: "env_type"
+    operator: "Equal"
+    value: "production"
+    effect: "NoSchedule"
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+
+k get nodes --kubeconfig /root/CKA/super.kubeconfig #해당 컨피그 파일을 이용해서 클러스트 접속
+cat .kube/config
+
+
+systemctl status docker => systemctl enable --now docker
+systemctl status kubelet => systemctl enable --now kubelet
+systemctl restart kubelet
+
+
