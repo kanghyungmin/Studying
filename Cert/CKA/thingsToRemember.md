@@ -117,6 +117,7 @@ k --kubeconfig /opt/course/1/kubeconfig config view -o yaml --raw | base64 -d
 
 // stateful-set을 scale up하는 내용. 
 k -n project-h800 scale sts o3db --replicas 1
+kubectl scale deploymnet my-nginx --replicas=2
 
 
 
@@ -259,6 +260,7 @@ https://wlsdn3004.tistory.com/45
 
 
 k expose pod podName --type=Nordport --port=80 --name mess
+kubectl expose deployment/my-nginx
 
 kubectl create deployment nginx-deploy --image=nginx:1.16 --dry-run=client -o yaml > deploy.yaml
 kubectl apply -f deploy.yaml --record
@@ -340,4 +342,11 @@ systemctl status docker => systemctl enable --now docker
 systemctl status kubelet => systemctl enable --now kubelet
 systemctl restart kubelet
 
+ETCDCTL_API=3 etcdctl snapshot restore /tmp/etcd-backup.db \
+--data-dir=/var/lib/etcd-restored
 
+mv /var/lib/etcd /var/lib/etcd-backup
+mv /var/lib/etcd-restored /var/lib/etcd
+
+systemctl start etcd
+systemctl start kube-apiserver
